@@ -1,34 +1,25 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-
-interface Itest {
-  res: {
-    ok: boolean;
-  };
-  id: number;
-  products: {
-    title: string;
-  }[];
-}
-
-const fetchData = async (): Promise<Itest> => {
-  const res = await fetch("https://dummyjson.com/carts/1");
-  return await res.json();
-};
+import useUserStore from "@/stores/userStore";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ["todos"],
-    queryFn: fetchData,
-  });
+  const { connectedUser, setUser } = useUserStore();
+  const router = useRouter();
 
-  if (isPending) {
-    return <div>Ca charge...</div>;
-  }
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    setUser(null);
+    router.push("/login");
+  };
 
-  if (isError) {
-    return <div>{error.message}</div>;
+  if (!connectedUser) {
+    router.push("login");
+    return null;
   }
-  console.log(data);
-  return <div>{JSON.stringify(data.products.map((p) => p.title))}</div>;
+  return (
+    <>
+      <p>{JSON.stringify(connectedUser)}</p>;
+      <button onMouseDown={logout}>Logout</button>
+    </>
+  );
 }
