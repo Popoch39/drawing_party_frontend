@@ -1,25 +1,18 @@
-"use client";
-import useUserStore from "@/stores/userStore";
-import { useRouter } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import SignOutButton from "@/components/signOutButton";
 
-export default function Home() {
-  const { connectedUser, setUser } = useUserStore();
-  const router = useRouter();
-
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    setUser(null);
-    router.push("/login");
-  };
-
-  if (!connectedUser) {
-    router.push("login");
-    return null;
-  }
+export default async function Home() {
+  const session = await getServerSession(authOptions);
   return (
-    <>
-      <p>{JSON.stringify(connectedUser)}</p>;
-      <button onMouseDown={logout}>Logout</button>
-    </>
+    <div>
+      <h1>Dashboard</h1>
+      <SignOutButton />
+      {session ? (
+        <p>Welcome, {session.user?.name || "User"}!</p>
+      ) : (
+        <p>You are not logged in.</p>
+      )}
+    </div>
   );
 }
