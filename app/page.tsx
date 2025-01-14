@@ -1,18 +1,18 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import SignOutButton from "@/components/signOutButton";
+import { redirect } from "next/navigation";
+import ZoomableCanvas from "@/components/ZoomableCanvas";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <SignOutButton />
-      {session ? (
-        <p>Welcome, {session.user?.name || "User"}!</p>
-      ) : (
-        <p>You are not logged in.</p>
-      )}
-    </div>
+    <>
+      <ZoomableCanvas />
+    </>
   );
 }

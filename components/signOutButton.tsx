@@ -1,13 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const SignOutButton = () => {
-  const { data: session } = useSession();
-
-  console.log(session);
-
-  return null;
+  return <button onMouseDown={() => signOut()}>Log out</button>;
 };
 
 export default SignOutButton;
